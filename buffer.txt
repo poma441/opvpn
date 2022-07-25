@@ -1,0 +1,9 @@
+  "proxy": "http://localhost:8080",
+  "react-router-dom": "^5.2.0",  
+
+<form action="">
+      <p>Certificate Authority (CA): <input type="checkbox" name="" id=""/></p>
+      <p>Server Certificate: <input type="checkbox" name="" id=""/></p>
+      <p>Client count <input type="number" /></p>
+      <button>Generate</button>
+</form>
