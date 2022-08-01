@@ -1,10 +1,10 @@
 package main
 
 import (
+	"net/http"
 	ovpn_config "opvpn/internal/config_gen"
 	server "opvpn/internal/keys"
 	manage_server "opvpn/internal/server"
-	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

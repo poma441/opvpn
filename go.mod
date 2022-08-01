@@ -1,4 +1,4 @@
-module goproj
+module opvpn
 
 go 1.16
 
