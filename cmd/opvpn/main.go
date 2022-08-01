@@ -1,9 +1,9 @@
 package main
 
 import (
-	ovpn_config "goproj/internal/config_gen"
-	server "goproj/internal/keys"
-	manage_server "goproj/internal/server"
+	ovpn_config "opvpn/internal/config_gen"
+	server "opvpn/internal/keys"
+	manage_server "opvpn/internal/server"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
