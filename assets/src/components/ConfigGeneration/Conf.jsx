@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -13,22 +14,22 @@ import Button from '@mui/material/Button';
 
 export const Conf = () => {
   const tunnel_lvl = [
-    'tap',
-    'tun'
+    {val: 'tap', desc: "TAP: Level 2"},
+    {val: 'tun', desc: "TUN: Level 3"}
   ]
   const tunLvlList = tunnel_lvl.map((lvl) =>
-    <FormControlLabel value={lvl} control={<Radio />} label={lvl} />
+    <FormControlLabel value={lvl.val} control={<Radio />} label={lvl.desc} />
   )
   const [lvl, setLvl] = useState(tunnel_lvl[0])
   const handleSetLvl = (event) => {
     setLvl(event.target.value);
   };
   const protocols = [
-    'udp',
-    'tcp'
+    { val: 'udp', desc: "UDP" },
+    { val: 'tcp', desc: "TCP" }
   ]
   const protoList = protocols.map((prot) =>
-    <FormControlLabel value={prot} control={<Radio />} label={prot} />
+    <FormControlLabel value={prot.val} control={<Radio />} label={prot.desc} />
   )
   const [proto, setProto] = useState(protocols[0])
   const handleSetProto = (event) => {
@@ -131,16 +132,19 @@ export const Conf = () => {
       <Button 
         variant='contained' 
         sx={{width: 200}} 
-        onClick={() => { 
-          console.log(serverIP)
-          console.log(port) 
-          console.log(lvl)
-          console.log(proto)
-          console.log(adapterName)
-          console.log(cipher)
-          console.log(addrPool)
-          console.log(netmask)
-          console.log(route)
+        onClick={async () => { 
+          const response = await axios.post('http://localhost:8080/conf', {
+            "serverIP": serverIP,
+            "port": port,
+            "proto": proto,
+            "tunnel_lvl": lvl,
+            "dev": adapterName,
+            "cipher": cipher,
+            "ifconfig-pool": addrPool,
+            "netmask": netmask,
+            "push": route
+          })
+          console.log(response.data)
         }}
       >Generate</Button>
     </Box>

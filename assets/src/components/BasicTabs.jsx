@@ -7,7 +7,9 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
 
 
 
@@ -15,7 +17,6 @@ import Box from '@mui/material/Box';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       role="tabpanel"
@@ -46,12 +47,37 @@ function a11yProps(index) {
   };
 }
 
-export default function BasicTabs() {
+export default function BasicTabs(props) {
+  const StyledPaper = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(2),
+    // maxWidth: 400,
+    color: theme.palette.text.primary,
+  }));
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  const [logs, setLogs] = React.useState([])
+  const addLogs = (newLogs) => {
+    setLogs([...logs, newLogs])
+  }
+  const showLogs = logs.map((data) =>
+    <StyledPaper
+      sx={{
+        my: 1,
+        p: 2,
+      }}
+    >
+      <Grid container wrap="nowrap" spacing={2}>
+        <Grid item xs>
+          <Typography>{data}</Typography>
+        </Grid>
+      </Grid>
+    </StyledPaper>
+  )
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -69,9 +95,10 @@ export default function BasicTabs() {
         <Conf />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <BasicButtonGroup />
+        <BasicButtonGroup showLogs={addLogs}/>
       </TabPanel>
       <h1>Logs</h1>
+      {showLogs}
     </Box>
   );
 }
