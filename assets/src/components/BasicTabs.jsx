@@ -1,4 +1,5 @@
 import * as React from 'react';
+import TabPanel from './TabPanel';
 import { Keys } from './PKI/Keys';
 import { Conf } from './ConfigGeneration/Conf';
 import BasicButtonGroup from './ServerManagement/BasicButtonGroup';
@@ -12,27 +13,6 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 
 
-
-
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
 
 TabPanel.propTypes = {
   children: PropTypes.node,
@@ -62,7 +42,7 @@ export default function BasicTabs(props) {
   };
   const [logs, setLogs] = React.useState([])
   const addLogs = (newLogs) => {
-    setLogs([...logs, newLogs])
+    setLogs([newLogs, ...logs])
   }
   const showLogs = logs.map((data) =>
     <StyledPaper
