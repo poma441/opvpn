@@ -41,7 +41,7 @@ func addPKI(c *gin.Context) {
 	if keys_struct.Server {
 		server.CreateServer("certs/ca.crt", "certs/ca.key")
 	}
-	for i := 0; i < keys_struct.ClientCount; i++ {
+	for i := -1; i < keys_struct.ClientCount; i++ {
 		server.CreateClient(i+1, "certs/ca.crt", "certs/ca.key")
 	}
 
@@ -77,7 +77,7 @@ func CreateConf(c *gin.Context) {
 		"pull",
 	}
 	config_data.CreateServerConfigAndCcd(config_directives, "confs/server")
-	config_data.CreateClientConf(config_directives, "clients", "certs")
+	config_data.CreateClientConfs(config_directives, "clients", "certs")
 	c.JSON(http.StatusCreated, gin.H{"msg": "Configuration files created"})
 }
 
@@ -96,7 +96,7 @@ func ManageServer(c *gin.Context) {
 func downloadFile(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "*")
 	c.Header("Access-Control-Allow-Credentials", "true")
-	filePath := c.Query("name")
+	filePath := "" + c.Query("name")
 	fileTmp, errByOpenFile := os.Open(filePath)
 	defer fileTmp.Close()
 	fileName := path.Base(filePath)

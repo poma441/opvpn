@@ -11,7 +11,9 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
-import axios from 'axios';
+import { DownloadFile } from '../actions/DownloadFile';
+// import axios from 'axios';
+
 
 
 
@@ -68,20 +70,7 @@ export default function BasicTabs(props) {
     let links = []
     for (let i = 0; i < clientCount; i++) {
         links.push(
-            <button key={i} onClick={async () => {
-                const response = await axios({
-                  url: "http://localhost:8080/download?name=buffer.txt",
-                  method: 'GET',
-                  responseType: 'blob', // important
-                })
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'file.txt'); //or any other extension
-                document.body.appendChild(link);
-                link.click();
-              } 
-            }>Download config for client {i + 1}</button>
+            <button key={i + 1} onClick={() => DownloadFile(`client${i+1}.crt`)}>Download config for client {i + 1}</button>
         )
     }
     return links

@@ -80,7 +80,7 @@ func ReadKeyFile(pathToKey string) []byte {
 	return data
 }
 
-func (config_data *ConfJson) CreateClientConf(config_directives []string, path_to_client_dir string, path_to_keys string) {
+func (config_data *ConfJson) CreateClientsDir(path_to_client_dir string) {
 	//Creating clients dir if not exists
 	_, err := os.Stat(path_to_client_dir)
 	if os.IsNotExist(err) {
@@ -89,33 +89,48 @@ func (config_data *ConfJson) CreateClientConf(config_directives []string, path_t
 			log.Fatal(err)
 		}
 	}
+}
+
+func (config_data *ConfJson) ConfigContent(config_directives []string, path_to_config string, config_name string, path_to_keys string, isCherep bool) {
+	file, err := os.Create(path_to_config + config_name + ".ovpn")
+
+	if err != nil {
+		fmt.Println("Unable to create file:", err)
+		os.Exit(1)
+	}
+
+	defer file.Close()
+
+	file.WriteString(config_directives[13] + "\n")
+	file.WriteString(config_directives[1] + config_data.Proto + "\n")
+	file.WriteString(config_directives[2] + config_data.AdapterName + "\n")
+	file.WriteString(config_directives[14] + config_data.ServerIP + "\n")
+	file.WriteString(config_directives[15] + "\n")
+	file.WriteString("<ca>\n")
+	file.WriteString(string(ReadKeyFile(path_to_keys + "/ca.crt")))
+	file.WriteString("</ca>\n")
+	file.WriteString("<cert>\n")
+	file.WriteString(string(ReadKeyFile(path_to_keys + config_name + ".crt")))
+	file.WriteString("</cert>\n")
+	file.WriteString("<key>\n")
+	file.WriteString(string(ReadKeyFile(path_to_keys + config_name + ".key")))
+	file.WriteString("</key>\n")
+	file.WriteString("<tls-auth>\n")
+	file.WriteString(string(ReadKeyFile(path_to_keys + "/ta.key")))
+	file.WriteString("</tls-auth>\n")
+	file.WriteString(config_directives[3] + config_data.Cipher + "\n")
+	if isCherep {
+		file.WriteString("pull\n")
+	}
+}
+
+func (config_data *ConfJson) CreateClientConfs(config_directives []string, path_to_client_dir string, path_to_keys string) {
+	//Creating clients dir if not exists
+	config_data.CreateClientsDir(path_to_client_dir)
 	//Creating configs
 	IPool := strings.Split(config_data.AddrPool, ",")
 	for i := 0; i < len(IPool); i++ {
-		file, err := os.Create(path_to_client_dir + "/client" + strconv.Itoa(i+1) + ".ovpn")
-
-		if err != nil {
-			fmt.Println("Unable to create file:", err)
-			os.Exit(1)
-		}
-		defer file.Close()
-		file.WriteString(config_directives[13] + "\n")
-		file.WriteString(config_directives[1] + config_data.Proto + "\n")
-		file.WriteString(config_directives[2] + config_data.AdapterName + "\n")
-		file.WriteString(config_directives[14] + config_data.ServerIP + "\n")
-		file.WriteString(config_directives[15] + "\n")
-		file.WriteString("<ca>\n")
-		file.WriteString(string(ReadKeyFile(path_to_keys + "/ca.crt")))
-		file.WriteString("</ca>\n")
-		file.WriteString("<cert>\n")
-		file.WriteString(string(ReadKeyFile(path_to_keys + "/client" + strconv.Itoa(i+1) + ".crt")))
-		file.WriteString("</cert>\n")
-		file.WriteString("<key>\n")
-		file.WriteString(string(ReadKeyFile(path_to_keys + "/client" + strconv.Itoa(i+1) + ".key")))
-		file.WriteString("</key>\n")
-		file.WriteString("<tls-auth>\n")
-		file.WriteString(string(ReadKeyFile(path_to_keys + "/ta.key")))
-		file.WriteString("</tls-auth>\n")
-		file.WriteString(config_directives[3] + config_data.Cipher + "\n")
+		config_data.ConfigContent(config_directives, path_to_client_dir, "/client"+strconv.Itoa(i+1), path_to_keys, false)
 	}
+	config_data.ConfigContent(config_directives, path_to_client_dir, "/client0", path_to_keys, true)
 }
