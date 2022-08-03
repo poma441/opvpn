@@ -17,7 +17,7 @@ const Input = styled(MuiInput)`
   width: 42px;
 `;
 
-export const Keys = () => {
+export const Keys = (props) => {
     const inpRefCA = useRef();
     const inpRefSrv = useRef();
 
@@ -43,8 +43,10 @@ export const Keys = () => {
         console.log(inpRefCA.current.checked)
         console.log(inpRefSrv.current.checked)
         console.log(clientCount)
+        props.updateClientCount(clientCount)
         const response = await axios.post('http://localhost:8080/keys', {"ca": inpRefCA.current.checked,"server": inpRefSrv.current.checked,"clients": clientCount})
-        console.log(response.data)
+        // console.log(response.data)
+        props.showLogs(response.data.msg)
     }
 
   return (

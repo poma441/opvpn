@@ -1,13 +1,17 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	ovpn_config "opvpn/internal/config_gen"
 	server "opvpn/internal/keys"
 	manage_server "opvpn/internal/server"
+	"os"
+	"path"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/tendermint/tmlibs/common"
 )
 
 type pki struct {
@@ -42,9 +46,7 @@ func addPKI(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"CA":          "created",
-		"Server_cert": "created",
-		"Client_keys": "created",
+		"msg": "CA - created, Server cert - created, Client keys - created",
 	})
 }
 
@@ -76,7 +78,7 @@ func CreateConf(c *gin.Context) {
 	}
 	config_data.CreateServerConfigAndCcd(config_directives, "confs/server")
 	config_data.CreateClientConf(config_directives, "clients", "certs")
-	c.JSON(http.StatusCreated, gin.H{"msg": "created"})
+	c.JSON(http.StatusCreated, gin.H{"msg": "Configuration files created"})
 }
 
 func ManageServer(c *gin.Context) {
@@ -91,6 +93,29 @@ func ManageServer(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"msg": manage_server.ExecCommand("service", args)})
 }
 
+func downloadFile(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Credentials", "true")
+	filePath := c.Query("name")
+	fileTmp, errByOpenFile := os.Open(filePath)
+	defer fileTmp.Close()
+	fileName := path.Base(filePath)
+	if common.IsEmpty(filePath) || common.IsEmpty(fileName) || errByOpenFile != nil {
+		log.Println("failed to get file")
+		c.Redirect(http.StatusFound, "/404")
+		return
+	}
+	c.Header("Content-Type", "application/octet-stream")
+	//Force browser download
+	c.Header("Content-Disposition", "attachment; filename="+fileName)
+	//Browser download or preview
+	c.Header("Content-Disposition", "inline;filename="+fileName)
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Cache-Control", "no-cache")
+
+	c.File(filePath)
+}
+
 func main() {
 	// Creates default gin router with Logger and Recovery middleware already attached
 	router := gin.Default()
@@ -100,7 +125,7 @@ func main() {
 	router.POST("/keys", addPKI)
 	router.POST("/management", ManageServer)
 	router.POST("/conf", CreateConf)
-
+	router.GET("/download", downloadFile)
 	// Start listening and serving requests
 	router.Use(cors.New(config))
 	router.Run(":8080")

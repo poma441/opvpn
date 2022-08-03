@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
+import axios from 'axios';
 
 
 
@@ -40,6 +41,7 @@ export default function BasicTabs(props) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
   const [logs, setLogs] = React.useState([])
   const addLogs = (newLogs) => {
     setLogs([newLogs, ...logs])
@@ -58,7 +60,33 @@ export default function BasicTabs(props) {
       </Grid>
     </StyledPaper>
   )
-
+  const [clientCount, setClientCount] = React.useState(0)
+  const updateClientCount = (count) => {
+    setClientCount(count)
+  }
+  const showDownloadLinks = (clientCount) => {
+    let links = []
+    for (let i = 0; i < clientCount; i++) {
+        links.push(
+            <button key={i} onClick={async () => {
+                const response = await axios({
+                  url: "http://localhost:8080/download?name=buffer.txt",
+                  method: 'GET',
+                  responseType: 'blob', // important
+                })
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'file.txt'); //or any other extension
+                document.body.appendChild(link);
+                link.click();
+              } 
+            }>Download config for client {i + 1}</button>
+        )
+    }
+    return links
+  }
+    
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -69,14 +97,15 @@ export default function BasicTabs(props) {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <Keys />
+        <Keys showLogs={addLogs} updateClientCount={updateClientCount}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Conf />
+        <Conf showLogs={addLogs} clientCount={clientCount}/>
       </TabPanel>
       <TabPanel value={value} index={2}>
         <BasicButtonGroup showLogs={addLogs}/>
       </TabPanel>
+      {showDownloadLinks(clientCount)}
       <h1>Logs</h1>
       {showLogs}
     </Box>
