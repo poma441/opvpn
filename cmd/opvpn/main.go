@@ -89,8 +89,8 @@ func ManageServer(c *gin.Context) {
 	c.Header("Access-Control-Allow-Credentials", "true")
 
 	args := []string{"openvpn", server_mng.Command}
-
-	c.JSON(http.StatusOK, gin.H{"msg": manage_server.ExecCommand("service", args)})
+	manage_server.ExecCommand("service", args)
+	c.JSON(http.StatusOK, gin.H{"msg": manage_server.ExecCommand("service", []string{"openvpn", "status"})})
 }
 
 func downloadFile(c *gin.Context) {
