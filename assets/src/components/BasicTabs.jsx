@@ -11,8 +11,6 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
-// import { DownloadFile } from '../actions/DownloadFile';
-// import axios from 'axios';
 
 
 
@@ -66,16 +64,7 @@ export default function BasicTabs(props) {
   const updateClientCount = (count) => {
     setClientCount(count)
   }
-  // const showDownloadLinks = (clientCount) => {
-  //   let links = []
-  //   for (let i = 0; i < clientCount; i++) {
-  //       links.push(
-  //           <button key={i + 1} onClick={() => DownloadFile(`client${i+1}.crt`)}>Download config for client {i + 1}</button>
-  //       )
-  //   }
-  //   return links
-  // }
-    
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -86,15 +75,14 @@ export default function BasicTabs(props) {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <Keys showLogs={addLogs} updateClientCount={updateClientCount}/>
+        <Keys showLogs={addLogs} updateClientCount={updateClientCount} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Conf showLogs={addLogs} clientCount={clientCount}/>
+        <Conf showLogs={addLogs} clientCount={clientCount} />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <BasicButtonGroup showLogs={addLogs}/>
+        <BasicButtonGroup showLogs={addLogs} />
       </TabPanel>
-      {/* {showDownloadLinks(clientCount)} */}
       <h1>Logs</h1>
       {showLogs}
     </Box>

@@ -1,5 +1,4 @@
 import React from 'react'
-// import { useState } from 'react';
 import { useRef } from 'react'
 import axios from 'axios'
 import FormGroup from '@mui/material/FormGroup';
@@ -45,7 +44,6 @@ export const Keys = (props) => {
         console.log(clientCount)
         props.updateClientCount(clientCount)
         const response = await axios.post('http://localhost:8080/keys', {"ca": inpRefCA.current.checked,"server": inpRefSrv.current.checked,"clients": clientCount})
-        // console.log(response.data)
         props.showLogs(response.data.msg)
     }
 
