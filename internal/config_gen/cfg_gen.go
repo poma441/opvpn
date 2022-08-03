@@ -119,30 +119,3 @@ func (config_data *ConfJson) CreateClientConf(config_directives []string, path_t
 		file.WriteString(config_directives[3] + config_data.Cipher + "\n")
 	}
 }
-
-// func main() {
-// 	config_data := conf_json{"srv_ip", "tap", "1194", "udp", "tap0", "aes", "10.1.244.249,10.1.244.250", "255.255.255.0", "route 10.1.0.0 255.255.0.0 10.1.254.1"}
-// 	config_directives := []string{
-// 		"port ",
-// 		"proto ",
-// 		"dev ",
-// 		"cipher ",
-// 		"mode server",
-// 		"tls-server",
-// 		"client-config-dir ",
-// 		"ca ",
-// 		"cert ",
-// 		"key ",
-// 		"tls-auth ",
-// 		"client-to-client",
-// 		"max-routes-per-client 2048",
-// 		//Client conf directives
-// 		"client", //14
-// 		"remote ",
-// 		"tls-client",
-// 		"pull",
-// 	}
-// 	// CreateServerConfigAndCcd(config_directives, config_data, "confs/server")
-// 	// CreateServerConfigAndCcd(config_directives, config_data, "/etc/openvpn/server")
-// 	CreateClientConf(config_directives, config_data, "clients", "certs")
-// }

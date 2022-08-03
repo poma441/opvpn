@@ -12,7 +12,7 @@ import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 
-export const Conf = () => {
+export const Conf = (props) => {
   const tunnel_lvl = [
     {val: 'tap', desc: "TAP: Level 2"},
     {val: 'tun', desc: "TUN: Level 3"}
@@ -20,9 +20,10 @@ export const Conf = () => {
   const tunLvlList = tunnel_lvl.map((lvl) =>
     <FormControlLabel value={lvl.val} control={<Radio />} label={lvl.desc} />
   )
-  const [lvl, setLvl] = useState(tunnel_lvl[0])
+  const [lvl, setLvl] = useState(tunnel_lvl[0].val)
   const handleSetLvl = (event) => {
     setLvl(event.target.value);
+    setAdapterName(event.target.value + '0')
   };
   const protocols = [
     { val: 'udp', desc: "UDP" },
@@ -31,7 +32,7 @@ export const Conf = () => {
   const protoList = protocols.map((prot) =>
     <FormControlLabel value={prot.val} control={<Radio />} label={prot.desc} />
   )
-  const [proto, setProto] = useState(protocols[0])
+  const [proto, setProto] = useState(protocols[0].val)
   const handleSetProto = (event) => {
     setProto(event.target.value);
   };
@@ -58,7 +59,7 @@ export const Conf = () => {
   const handleSetPort = (event) => {
     setPort(event.target.value);
   };
-  const [adapterName, setAdapterName] = useState(lvl + '1')
+  const [adapterName, setAdapterName] = useState(lvl + '0')
   const handleSetAdapterName = (event) => {
     setAdapterName(event.target.value);
   };
@@ -83,6 +84,7 @@ export const Conf = () => {
         flexDirection: 'column',
       }}
     >
+      {/* <h1>{props.clientCount}</h1> */}
       <TextField id="outlined-basic" label="Server IP" variant="outlined" value={serverIP} onChange={handleSetServerIP}/>
       <TextField id="outlined-basic" label="Port" variant="outlined" value={port} onChange={handleSetPort}/>
       <FormControl>
@@ -142,9 +144,10 @@ export const Conf = () => {
             "cipher": cipher,
             "ifconfig-pool": addrPool,
             "netmask": netmask,
-            "push": route
+            "push": route 
           })
-          console.log(response.data)
+          // console.log(response.data)
+          props.showLogs(response.data.msg)
         }}
       >Generate</Button>
     </Box>
