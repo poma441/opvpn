@@ -11,11 +11,13 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
+import { DownloadFile } from '../../actions/DownloadFile';
+
 
 export const Conf = (props) => {
   const tunnel_lvl = [
-    {val: 'tap', desc: "TAP: Level 2"},
-    {val: 'tun', desc: "TUN: Level 3"}
+    { val: 'tap', desc: "TAP: Level 2" },
+    { val: 'tun', desc: "TUN: Level 3" }
   ]
   const tunLvlList = tunnel_lvl.map((lvl) =>
     <FormControlLabel value={lvl.val} control={<Radio />} label={lvl.desc} />
@@ -75,9 +77,27 @@ export const Conf = (props) => {
   const handleSetRoute = (event) => {
     setRoute(event.target.value);
   };
+  const [confCount, setConfCount] = useState(0)
+  const showDownloadLinks = (confCount) => {
+    let links = []
+    for (let i = 0; i < confCount; i++) {
+      if (i === 0) {
+        links.push(
+          <Button sx={{ width: 200, marginTop: 2 }} variant='outlined' key={i} onClick={() => DownloadFile(`client${i}.ovpn`)}>Download config for Cherep</Button>
+        )
+      }
+      else {
+        links.push(
+          <Button sx={{ width: 200, marginTop: 2 }} variant='outlined' key={i} onClick={() => DownloadFile(`client${i}.ovpn`)}>Download config for client {i}</Button>
+        )
+      }
+    }
+    return links
+  }
+
   return (
-    <Box 
-      component="div" 
+    <Box
+      component="div"
       sx={{
         '& .MuiTextField-root': { m: 1, width: '50ch' },
         display: 'flex',
@@ -85,8 +105,8 @@ export const Conf = (props) => {
       }}
     >
       {/* <h1>{props.clientCount}</h1> */}
-      <TextField id="outlined-basic" label="Server IP" variant="outlined" value={serverIP} onChange={handleSetServerIP}/>
-      <TextField id="outlined-basic" label="Port" variant="outlined" value={port} onChange={handleSetPort}/>
+      <TextField id="outlined-basic" label="Server IP" variant="outlined" value={serverIP} onChange={handleSetServerIP} />
+      <TextField id="outlined-basic" label="Port" variant="outlined" value={port} onChange={handleSetPort} />
       <FormControl>
         <FormLabel id="demo-radio-buttons-group-label">Tunnel level</FormLabel>
         <RadioGroup
@@ -109,7 +129,7 @@ export const Conf = (props) => {
           {protoList}
         </RadioGroup>
       </FormControl>
-      <TextField id="outlined-basic" label="Virtual adapter name" variant="outlined" value={adapterName} onChange={handleSetAdapterName}/>  
+      <TextField id="outlined-basic" label="Virtual adapter name" variant="outlined" value={adapterName} onChange={handleSetAdapterName} />
       <InputLabel id="demo-simple-select-label">Cipher</InputLabel>
       <Select
         labelId="demo-simple-select-label"
@@ -117,24 +137,24 @@ export const Conf = (props) => {
         value={cipher}
         label="Cipher"
         onChange={handleSetCipher}
-        sx={{width: 300}}
+        sx={{ width: 300 }}
       >
         {cipherList}
       </Select>
-      <TextField id="outlined-basic" label="IP Address pool cherez zpt" variant="outlined" value={addrPool} onChange={handleSetAddrPool}/>
-      <TextField id="outlined-basic" label="Netmask, example: 255.255.255.0" variant="outlined" value={netmask} onChange={handleSetNetmask}/>
-      <TextField 
-        sx={{width: 600}} 
-        id="outlined-basic" 
-        label="Route, example: route 10.1.0.0 255.255.0.0 10.1.254.1" 
-        variant="outlined" 
+      <TextField id="outlined-basic" label="IP Address pool cherez zpt" variant="outlined" value={addrPool} onChange={handleSetAddrPool} />
+      <TextField id="outlined-basic" label="Netmask, example: 255.255.255.0" variant="outlined" value={netmask} onChange={handleSetNetmask} />
+      <TextField
+        sx={{ width: 600 }}
+        id="outlined-basic"
+        label="Route, example: route 10.1.0.0 255.255.0.0 10.1.254.1"
+        variant="outlined"
         value={route}
         onChange={handleSetRoute}
       />
-      <Button 
-        variant='contained' 
-        sx={{width: 200}} 
-        onClick={async () => { 
+      <Button
+        variant='contained'
+        sx={{ width: 200 }}
+        onClick={async () => {
           const response = await axios.post('http://localhost:8080/conf', {
             "serverIP": serverIP,
             "port": port,
@@ -144,12 +164,14 @@ export const Conf = (props) => {
             "cipher": cipher,
             "ifconfig-pool": addrPool,
             "netmask": netmask,
-            "push": route 
+            "push": route
           })
-          // console.log(response.data)
+          // console.log(response.data.confcount)
+          setConfCount(response.data.confcount)
           props.showLogs(response.data.msg)
         }}
       >Generate</Button>
+      {showDownloadLinks(confCount)}
     </Box>
   )
 }

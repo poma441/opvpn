@@ -76,9 +76,9 @@ func CreateConf(c *gin.Context) {
 		"tls-client",
 		"pull",
 	}
-	config_data.CreateServerConfigAndCcd(config_directives, "confs/server")
+	conf_count := config_data.CreateServerConfigAndCcd(config_directives, "confs/server")
 	config_data.CreateClientConfs(config_directives, "clients", "certs")
-	c.JSON(http.StatusCreated, gin.H{"msg": "Configuration files created"})
+	c.JSON(http.StatusCreated, gin.H{"msg": "Configuration files created", "confcount": conf_count})
 }
 
 func ManageServer(c *gin.Context) {
@@ -96,15 +96,15 @@ func ManageServer(c *gin.Context) {
 func downloadFile(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "*")
 	c.Header("Access-Control-Allow-Credentials", "true")
-	filePath := "" + c.Query("name")
+	filePath := "clients/" + c.Query("name")
 	fileTmp, errByOpenFile := os.Open(filePath)
-	defer fileTmp.Close()
 	fileName := path.Base(filePath)
 	if common.IsEmpty(filePath) || common.IsEmpty(fileName) || errByOpenFile != nil {
 		log.Println("failed to get file")
 		c.Redirect(http.StatusFound, "/404")
 		return
 	}
+	defer fileTmp.Close()
 	c.Header("Content-Type", "application/octet-stream")
 	//Force browser download
 	c.Header("Content-Disposition", "attachment; filename="+fileName)

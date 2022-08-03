@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
-import { DownloadFile } from '../actions/DownloadFile';
+// import { DownloadFile } from '../actions/DownloadFile';
 // import axios from 'axios';
 
 
@@ -66,15 +66,15 @@ export default function BasicTabs(props) {
   const updateClientCount = (count) => {
     setClientCount(count)
   }
-  const showDownloadLinks = (clientCount) => {
-    let links = []
-    for (let i = 0; i < clientCount; i++) {
-        links.push(
-            <button key={i + 1} onClick={() => DownloadFile(`client${i+1}.crt`)}>Download config for client {i + 1}</button>
-        )
-    }
-    return links
-  }
+  // const showDownloadLinks = (clientCount) => {
+  //   let links = []
+  //   for (let i = 0; i < clientCount; i++) {
+  //       links.push(
+  //           <button key={i + 1} onClick={() => DownloadFile(`client${i+1}.crt`)}>Download config for client {i + 1}</button>
+  //       )
+  //   }
+  //   return links
+  // }
     
   return (
     <Box sx={{ width: '100%' }}>
@@ -94,7 +94,7 @@ export default function BasicTabs(props) {
       <TabPanel value={value} index={2}>
         <BasicButtonGroup showLogs={addLogs}/>
       </TabPanel>
-      {showDownloadLinks(clientCount)}
+      {/* {showDownloadLinks(clientCount)} */}
       <h1>Logs</h1>
       {showLogs}
     </Box>

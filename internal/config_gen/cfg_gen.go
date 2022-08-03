@@ -21,7 +21,7 @@ type ConfJson struct {
 	Route       string `json:"push"`
 }
 
-func (config_data *ConfJson) CreateServerConfigAndCcd(config_directives []string, path_to_srv_dir string) {
+func (config_data *ConfJson) CreateServerConfigAndCcd(config_directives []string, path_to_srv_dir string) int {
 	_, err := os.Stat(path_to_srv_dir + "/ccd")
 	if os.IsNotExist(err) {
 		errDir := os.MkdirAll(path_to_srv_dir+"/ccd", 0755)
@@ -69,7 +69,7 @@ func (config_data *ConfJson) CreateServerConfigAndCcd(config_directives []string
 		file.WriteString("ifconfig-push " + IPool[i] + " " + config_data.Netmask + "\n")
 		file.WriteString("push \"" + config_data.Route + "\"" + "\n")
 	}
-
+	return len(IPool) + 1
 }
 
 func ReadKeyFile(pathToKey string) []byte {
