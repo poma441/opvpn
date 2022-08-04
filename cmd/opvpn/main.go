@@ -29,14 +29,16 @@ var config_data ovpn_config.ConfJson
 var server_mng server_management
 
 func addPKI(c *gin.Context) {
+	log_string := ""
 	if err := c.BindJSON(&keys_struct); err != nil {
 		return
 	}
 	c.Header("Access-Control-Allow-Origin", "*")
 	c.Header("Access-Control-Allow-Credentials", "true")
 	if keys_struct.CA {
-		server.CreateCA()
-		server.CreateTA()
+		log_string += server.CreateCA()
+		log_string += server.CreateDH()
+		log_string += server.CreateTA()
 	}
 	if keys_struct.Server {
 		server.CreateServer("certs/ca.crt", "certs/ca.key")
@@ -46,7 +48,7 @@ func addPKI(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"msg": "CA - created, Server cert - created, Client keys - created",
+		"msg": log_string + "Server cert - created, Client keys - created",
 	})
 }
 

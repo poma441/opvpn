@@ -16,7 +16,8 @@ import (
 )
 
 //ToDO: add parameter for CA name
-func CreateCA() {
+func CreateCA() string {
+	log_string := ""
 	_, err := os.Stat("certs")
 	if os.IsNotExist(err) {
 		errDir := os.MkdirAll("certs", 0777)
@@ -47,28 +48,33 @@ func CreateCA() {
 	ca_b, err := x509.CreateCertificate(rand.Reader, caCert, caCert, caPub, caPriv)
 	if err != nil {
 		log.Println("create ca failed", err)
-		// return
+		return "create ca failed"
 	}
 
 	// Public key
 	caCertOut, err := os.Create("certs/ca.crt")
 	if err != nil {
 		log.Println("Cannot create ca.crt! ", err)
-		panic(err)
+		return "Cannot create file ca.crt!"
+		// panic(err)
 	}
 	pem.Encode(caCertOut, &pem.Block{Type: "CERTIFICATE", Bytes: ca_b})
 	caCertOut.Close()
 	log.Print("written CA cert.pem\n")
+	log_string += "written CA cert.pem; "
 
 	// Private key
 	caKeyOut, err := os.OpenFile("certs/ca.key", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
 	if err != nil {
 		log.Println("Cannot create ca.key! ", err)
-		panic(err)
+		return "Cannot create ca.key! "
+		// panic(err)
 	}
 	pem.Encode(caKeyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(caPriv)})
 	caKeyOut.Close()
 	log.Print("written CA ca.key\n")
+	log_string += "written CA ca.key; "
+	return log_string
 }
 
 //ToDO: add parameter for Server name
@@ -180,10 +186,22 @@ func CreateClient(clientNum int, caCert_path string, caPriv_path string) {
 	log.Print("written Client" + strconv.Itoa(clientNum) + " key.pem\n")
 }
 
-func CreateTA() {
+func CreateTA() string {
 	cmd := exec.Command("openvpn", "--genkey", "secret", "certs/ta.key")
 	if err := cmd.Start(); err != nil {
 		log.Println(err.Error())
+		return "Cannot execute command to create TA.key; "
 	}
-	log.Print("written Client ta.key\n")
+	log.Print("written ta.key\n")
+	return "created ta.key; "
+}
+
+func CreateDH() string {
+	cmd := exec.Command("openssl", "dhparam", "-out", "/etc/openvpn/certs/dh2048.pem 2048")
+	if err := cmd.Start(); err != nil {
+		log.Println(err.Error())
+		return "Cannot execute command to create dh2048.pem; "
+	}
+	log.Print("written Client dh2048.pem\n")
+	return "created dh2048.pem; "
 }
