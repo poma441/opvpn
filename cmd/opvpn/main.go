@@ -4,10 +4,10 @@ import (
 	"log"
 	"net/http"
 	ovpn_config "opvpn/internal/config_gen"
-	server "opvpn/internal/keys"
 	manage_server "opvpn/internal/server"
 	"os"
 	"path"
+	"strconv"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -35,18 +35,18 @@ func addPKI(c *gin.Context) {
 	}
 	c.Header("Access-Control-Allow-Origin", "*")
 	c.Header("Access-Control-Allow-Credentials", "true")
-	if keys_struct.CA {
-		log_string += server.CreateCA()
-		log_string += server.CreateDH()
-		log_string += server.CreateTA()
-	}
-	if keys_struct.Server {
-		server.CreateServer("certs/ca.crt", "certs/ca.key")
-	}
-	for i := -1; i < keys_struct.ClientCount; i++ {
-		server.CreateClient(i+1, "certs/ca.crt", "certs/ca.key")
-	}
-
+	// if keys_struct.CA {
+	// 	log_string += server.CreateCA()
+	// 	log_string += server.CreateDH()
+	// 	log_string += server.CreateTA()
+	// }
+	// if keys_struct.Server {
+	// 	server.CreateServer("certs/ca.crt", "certs/ca.key")
+	// }
+	// for i := -1; i < keys_struct.ClientCount; i++ {
+	// 	server.CreateClient(i+1, "certs/ca.crt", "certs/ca.key")
+	// }
+	manage_server.ExecCommand("opvpn/internal/keys/script.sh", []string{strconv.Itoa(keys_struct.ClientCount)})
 	c.JSON(http.StatusCreated, gin.H{
 		"msg": log_string + "Server cert - created, Client keys - created",
 	})
